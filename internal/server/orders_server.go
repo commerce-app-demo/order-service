@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/commerce-app-demo/order-service/external/clients"
 	"github.com/commerce-app-demo/order-service/internal/models/orders"
 	"github.com/commerce-app-demo/order-service/internal/service"
 	orderspb "github.com/commerce-app-demo/order-service/proto"
@@ -11,7 +12,9 @@ import (
 
 type OrderServiceServer struct {
 	orderspb.UnimplementedOrderServiceServer
-	OrderService *service.OrderService
+	OrderService  *service.OrderService
+	UserClient    *clients.UserClient
+	ProductClient *clients.ProductClient
 }
 
 func (s *OrderServiceServer) GetOrders(ctx context.Context, req *orderspb.Empty) (*orderspb.OrderArray, error) {
@@ -52,6 +55,11 @@ func (s *OrderServiceServer) GetOrder(ctx context.Context, req *orderspb.GetOrde
 func (s *OrderServiceServer) CreateOrder(ctx context.Context, req *orderspb.CreateOrderRequest) (*orderspb.Order, error) {
 	if req.UserId == 0 || req.Status == "" {
 		return nil, fmt.Errorf("invalid request")
+	}
+	// Validate user exists
+	_, err := s.UserClient.ValidateUser(fmt.Sprint(req.UserId))
+	if err != nil {
+		return nil, fmt.Errorf("user not found or not valid: %w", err)
 	}
 	order := &orders.OrderEntity{
 		UserId:     int(req.UserId),
@@ -142,6 +150,11 @@ func (s *OrderServiceServer) GetOrderItems(ctx context.Context, req *orderspb.Ge
 }
 
 func (s *OrderServiceServer) CreateOrderItem(ctx context.Context, req *orderspb.CreateOrderItemRequest) (*orderspb.OrderItem, error) {
+	// Validate product exists
+	_, err := s.ProductClient.ValidateProduct(fmt.Sprint(req.ProductId))
+	if err != nil {
+		return nil, fmt.Errorf("product not found or not valid: %w", err)
+	}
 	item := &orders.OrderItemEntity{
 		OrderId:   int(req.OrderId),
 		ProductId: int(req.ProductId),

@@ -29,5 +29,5 @@ func main() {
 
 	orderRepo := &mysql.OrderRepository{DB: db}
 	orderService := &service.OrderService{Repo: orderRepo}
-	internal.RunGRPCServer(orderService, ":50053") // or use serverConfig.Port
+	internal.RunGRPCServer(orderService, userClient, productClient, ":50053") // or use serverConfig.Port
 }

@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package orders;
+
+option go_package = "github.com/commerce-app-demo/order-service/proto;orderspb";
+
+service OrderService {
+  rpc GetOrders(Empty) returns (OrderArray);
+  rpc GetOrder(GetOrderRequest) returns (Order);
+  rpc CreateOrder(CreateOrderRequest) returns (Order);
+  rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc DeleteOrder(DeleteOrderRequest) returns (DeleteOrderResponse);
+
+  // Order Items
+  rpc GetOrderItems(GetOrderItemsRequest) returns (OrderItemArray);
+  rpc CreateOrderItem(CreateOrderItemRequest) returns (OrderItem);
+  rpc UpdateOrderItem(UpdateOrderItemRequest) returns (UpdateOrderItemResponse);
+  rpc DeleteOrderItem(DeleteOrderItemRequest) returns (DeleteOrderItemResponse);
+}
+
+message Empty {}
+
+message Order {
+  int32 id = 1;
+  int32 user_id = 2;
+  double total_price = 3;
+  string status = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message OrderArray {
+  repeated Order orders = 1;
+}
+
+message GetOrderRequest {
+  int32 id = 1;
+}
+
+message CreateOrderRequest {
+  int32 user_id = 1;
+  double total_price = 2;
+  string status = 3;
+}
+
+message UpdateOrderRequest {
+  int32 id = 1;
+  Order order = 2;
+}
+
+message UpdateOrderResponse {
+  bool success = 1;
+  Order updated_order = 2;
+}
+
+message DeleteOrderRequest {
+  int32 id = 1;
+}
+
+message DeleteOrderResponse {
+  bool success = 1;
+  Order deleted_order = 2;
+}
+
+// Order Items
+message OrderItem {
+  int32 id = 1;
+  int32 order_id = 2;
+  int32 product_id = 3;
+  int32 quantity = 4;
+  double price = 5;
+  string created_at = 6;
+  string updated_at = 7;
+}
+
+message OrderItemArray {
+  repeated OrderItem items = 1;
+}
+
+message GetOrderItemsRequest {
+  int32 order_id = 1;
+}
+
+message CreateOrderItemRequest {
+  int32 order_id = 1;
+  int32 product_id = 2;
+  int32 quantity = 3;
+  double price = 4;
+}
+
+message UpdateOrderItemRequest {
+  int32 id = 1;
+  OrderItem item = 2;
+}
+
+message UpdateOrderItemResponse {
+  bool success = 1;
+  OrderItem updated_item = 2;
+}
+
+message DeleteOrderItemRequest {
+  int32 id = 1;
+}
+
+message DeleteOrderItemResponse {
+  bool success = 1;
+  OrderItem deleted_item = 2;
+}

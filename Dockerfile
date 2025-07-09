@@ -4,6 +4,11 @@ WORKDIR /go/src/order-service
 
 COPY go.mod go.sum ./
 RUN apk add --no-cache git
+
+ARG GITHUB_TOKEN
+RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+RUN go env -w GOPRIVATE=github.com/commerce-app-demo/* 
+
 RUN go mod download
 
 COPY . .

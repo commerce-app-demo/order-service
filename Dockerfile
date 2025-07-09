@@ -3,6 +3,7 @@ FROM golang:1.24.4-alpine AS build
 WORKDIR /go/src/order-service
 
 COPY go.mod go.sum ./
+RUN apk add --no-cache git
 RUN go mod download
 
 COPY . .

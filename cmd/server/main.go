@@ -17,7 +17,13 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	configFactory := config.Config{}
+	configFactory := config.Config{EnvFile: ""}
+
+	if err := configFactory.LoadEnv(config.DevelopmentEnv); err != nil {
+		log.Printf("cannot load environment variables from config: %v", err)
+		log.Println("using default .env")
+	}
+	
 	dbConfig := configFactory.LoadDB()
 	serverConfig := configFactory.LoadServer()
 

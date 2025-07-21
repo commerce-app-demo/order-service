@@ -2,10 +2,13 @@ FROM golang:1.24.4-alpine AS build
 
 WORKDIR /go/src/order-service
 
+# Add ARG for GITHUB_TOKEN
+ARG GITHUB_TOKEN
+
 RUN apk add --no-cache git
 
-RUN --mount=type=secret,id=github_token \
-    git config --global url."https://$(cat /run/secrets/github_token):x-oauth-basic@github.com/".insteadOf "https://github.com/"
+# Configure Git for private module access
+RUN git config --global url."https://${GITHUB_TOKEN}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
 COPY go.mod go.sum ./
 RUN go mod download

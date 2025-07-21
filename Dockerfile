@@ -2,6 +2,8 @@ FROM golang:1.24.4-alpine AS build
 
 WORKDIR /go/src/order-service
 
+RUN apk add --no-cache git
+
 RUN --mount=type=secret,id=github_token \
     git config --global url."https://$(cat /run/secrets/github_token):x-oauth-basic@github.com/".insteadOf "https://github.com/"
 

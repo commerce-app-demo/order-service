@@ -1,7 +1,7 @@
 version: '3.12'
 services:
   order_db:
-    image: mysql:8.0
+    image: docker.io/mysql:lts
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:z
       - order_db_vol:/var/lib/mysql

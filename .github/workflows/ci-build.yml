@@ -19,10 +19,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        
+      - name: Set GOPRIVATE
+        run: echo "GOPRIVATE=github.com/commerce-app-demo/*" >> $GITHUB_ENV
       
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
+        
       - name: Build Order Service Docker Image
         uses: docker/build-push-action@v5
         with:
@@ -32,3 +35,5 @@ jobs:
           tags: order-service:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            git_credentials=https://x-access-token:${{ secrets.GH_PAT }}@github.com

@@ -37,3 +37,9 @@ jobs:
           cache-to: type=gha,mode=max
           secrets: |
             git_credentials=https://x-access-token:${{ secrets.GH_PAT }}@github.com
+
+      - name: Google Auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with: 
+          credentials_json: ${{ secrets.PUSHER_SECRET }}

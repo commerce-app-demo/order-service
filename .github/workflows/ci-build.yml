@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+      packages: write
     env:
       app_name: commerce-app-demo
       service_name: order-service

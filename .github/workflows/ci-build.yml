@@ -47,6 +47,8 @@ jobs:
           tags: ${{ env.registry_host }}/${{ env.app_name }}/${{ env.service_name }}/order-service-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            git_credentials=https://x-access-token:${{ secrets.GH_PAT }}@github.com
 
       - name: Production Order Service Docker Image
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -58,3 +60,5 @@ jobs:
           tags: ${{ env.registry_host }}/${{ env.app_name }}/${{ env.service_name }}/main-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          secrets: |
+            git_credentials=https://x-access-token:${{ secrets.GH_PAT }}@github.com

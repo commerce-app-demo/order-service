@@ -2,6 +2,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"log"
 
 	"github.com/commerce-app-demo/order-service/external/clients"
@@ -28,7 +29,8 @@ func InitProductClient(ctx context.Context, serverConfig config.ServerConfig) *c
 
 func InitUserClient(ctx context.Context, serverConfig config.ServerConfig) *clients.UserClient {
 	opts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
-	grpcClientUser, err := grpc.NewClient(serverConfig.UserGrpcPort, opts...)
+	connString := fmt.Sprintf("%s:%s", serverConfig.Hostname, serverConfig.UserGrpcPort)
+	grpcClientUser, err := grpc.NewClient(connString, opts...)
 	if err != nil {
 		log.Fatalf("Error creating user client: %s", err)
 	}

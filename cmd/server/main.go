@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"log"
-	"time"
 
 	"github.com/commerce-app-demo/order-service/internal"
 	"github.com/commerce-app-demo/order-service/internal/config"
@@ -14,8 +13,9 @@ import (
 var MAX_RETRY = 3
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx := context.Background()
+	// defer cancel()
 
 	configFactory := config.Config{EnvFile: ""}
 
@@ -23,7 +23,7 @@ func main() {
 		log.Printf("cannot load environment variables from config: %v", err)
 		log.Println("using default .env")
 	}
-	
+
 	dbConfig := configFactory.LoadDB()
 	serverConfig := configFactory.LoadServer()
 
@@ -31,7 +31,7 @@ func main() {
 	productClient := internal.InitProductClient(ctx, serverConfig)
 	userClient := internal.InitUserClient(ctx, serverConfig)
 
-	log.Printf("All dependencies have been initalized, %v\n%v\n%v\n", db, productClient, userClient)
+	// log.Printf("All dependencies have been initalized, %v\n%v\n%v\n", db, productClient, userClient)
 
 	orderRepo := &mysql.OrderRepository{DB: db}
 	orderService := &service.OrderService{Repo: orderRepo}

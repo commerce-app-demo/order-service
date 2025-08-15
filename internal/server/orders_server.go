@@ -3,8 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/commerce-app-demo/order-service/external/clients"
+	"github.com/commerce-app-demo/order-service/internal/broker"
 	"github.com/commerce-app-demo/order-service/internal/models/orders"
 	"github.com/commerce-app-demo/order-service/internal/service"
 	orderspb "github.com/commerce-app-demo/order-service/proto"
@@ -57,10 +59,13 @@ func (s *OrderServiceServer) CreateOrder(ctx context.Context, req *orderspb.Crea
 		return nil, fmt.Errorf("invalid request")
 	}
 	// Validate user exists
-	_, err := s.UserClient.ValidateUser(fmt.Sprint(req.UserId))
+	usr, err := s.UserClient.ValidateUser(fmt.Sprint(req.UserId))
 	if err != nil {
-		return nil, fmt.Errorf("user not found or not valid: %w", err)
+		log.Println(err)
+		return nil, fmt.Errorf("%w", err)
 	}
+
+	log.Println("User: ", usr.FirstName)
 	order := &orders.OrderEntity{
 		UserId:     int(req.UserId),
 		TotalPrice: req.TotalPrice,
@@ -68,8 +73,17 @@ func (s *OrderServiceServer) CreateOrder(ctx context.Context, req *orderspb.Crea
 	}
 	created, err := s.OrderService.CreateOrder(order)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
+
+	p, err := broker.NewKafkaProducer()
+	if err != nil {
+		return nil, err
+	}
+
+	p.PublishOrderPlaced(ctx, created)
+
 	return &orderspb.Order{
 		Id:         int32(created.Id),
 		UserId:     int32(created.UserId),
